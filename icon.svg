@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#101b2b"/>
+  <circle cx="256" cy="256" r="158" fill="#fff3d5"/>
+  <path d="M156 142c52 58 52 170 0 228M356 142c-52 58-52 170 0 228" fill="none" stroke="#de625d" stroke-width="12" stroke-linecap="round"/>
+  <path d="m143 175 25-8m-27 37 27-4m-25 36 27 1m-24 35 27 5m-25 32 27 9m-24 27 25 13m178-178-25-8m27 37-27-4m25 36-27 1m24 35-27 5m25 32-27 9m24 27-25 13" fill="none" stroke="#de625d" stroke-width="9" stroke-linecap="round"/>
+  <path d="M111 397c40-26 81-39 124-39h42c43 0 84 13 124 39v41H111z" fill="#ffd166"/>
+  <text x="256" y="430" text-anchor="middle" font-family="system-ui,sans-serif" font-size="40" font-weight="900" fill="#18283a">DC</text>
+</svg>

@@ -1,0 +1,7 @@
+{
+  "name": "diamond-club-prototype",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Prototipo web autocontenido de un juego arcade de béisbol",
+  "scripts": { "start": "python3 -m http.server 8000" }
+}
