@@ -6,30 +6,32 @@ Prototipo web autocontenido derivado de la especificación de Baseball Heroes in
 
 Abre `index.html` en Chrome, Edge o Firefox. Apunta con el mouse sobre el campo y usa el botón **SWING** o la barra espaciadora. Las flechas también mueven la mira.
 
-## Probar en Android
+## Probar e instalar en Android
 
-Copia `index.html` al teléfono y ábrelo en Chrome. Para una prueba más confiable en red local, desde la carpeta del proyecto ejecuta:
+Abre la versión publicada por HTTPS en Chrome. Para instalarla, toca **⋮ → Instalar app** o **Añadir a pantalla de inicio**. El progreso queda guardado en ese navegador y no se sincroniza con otros dispositivos.
+
+Para probar únicamente desde una red local (sin instalación PWA), desde la carpeta del proyecto ejecuta:
 
 ```bash
 python -m http.server 8000
 ```
 
-Conecta el teléfono a la misma red Wi-Fi y visita `http://IP-DE-TU-PC:8000`. Arrastra el dedo por el campo para apuntar y toca **SWING**. El navegador debe permitir conexiones a la red local.
+Conecta el teléfono a la misma red Wi-Fi y visita `http://IP-DE-TU-PC:8000`. Arrastra el dedo por el campo para apuntar y toca **SWING**. El navegador debe permitir conexiones a la red local. HTTP local sirve para probar el juego, pero no para instalarlo como PWA.
 
 ## Qué funciona
 
 - Tres entradas cortas contra lanzamientos simulados.
-- Mira de zona, tres tipos de lanzamiento, swings, fouls, strikes, bolas, outs y hits.
+- Mira de zona, cuatro perfiles de lanzamiento, swings, fouls, strikes, bolas, outs y hits.
 - Marcador, bases, objetivo de hits, recompensa demostrativa y guardado local mediante `localStorage`.
 - Diseño adaptable a PC y pantallas móviles.
 
 ## Límites de esta primera versión
 
-Es una demostración de mecánica y flujo, no el juego completo ni una app instalada. No contiene backend, autenticación, PvP, animación 3D ni economía real. La defensa, los lanzamientos y los premios son simulados en el navegador; borrar los datos del navegador reinicia el guardado. El salto a apps nativas puede hacerse después de validar el control, migrando la mecánica a Unity u otro motor elegido.
+Es una demostración de mecánica y flujo, distribuida como PWA instalable. No contiene backend, autenticación, PvP, animación 3D ni economía real. La defensa, los lanzamientos y los premios son simulados en el navegador; borrar los datos del navegador reinicia el guardado. El salto a apps nativas puede hacerse después de validar el control, migrando la mecánica a Unity u otro motor elegido.
 
 ## Siguiente etapa del proyecto
 
-Esta iteración mejora el tiempo visible del lanzamiento y el avance de corredores. El avance de corredores tiene pruebas de lógica básicas incluidas en `tests/game-logic.test.js`. El próximo hito es recoger comentarios sobre el control (si se entiende el momento del swing y si la mira responde bien), antes de ampliar el juego con roster persistente y backend.
+Esta iteración mejora el tiempo visible del lanzamiento y el avance de corredores. El avance de corredores tiene pruebas de lógica básicas incluidas en `tests/game-logic.test.js`. El hito actual es validar la lectura de los lanzamientos y la comodidad de los controles en Android y PC. Los datos se guardan localmente; sincronización, cuentas y backend quedan para una etapa posterior.
 
 ## Actualización v0.2
 
@@ -160,3 +162,12 @@ Pruebas: `node tests/lobby.test.js`, `node tests/save-resume.test.js`, `node tes
 El proyecto ahora incluye un manifiesto de aplicación, iconos de 192 y 512 px, un botón de instalación cuando el navegador lo admite y un service worker que guarda el prototipo para volver a abrirlo sin conexión. También se permite el zoom del navegador en móviles y el reloj de fildeo no repite anuncios accesibles a cada cuadro. En PC puedes probarlo desde `http://localhost`; para instalarlo en Android desde un sitio alojado, ese sitio debe servirse por HTTPS. Abrir el archivo directamente o acceder desde una IP local por HTTP permite probar el juego, pero no habilita la instalación PWA ni el service worker.
 
 Prueba PWA: `node tests/pwa.test.js`. Pruebas de juego: `node tests/lobby.test.js`, `node tests/save-resume.test.js`, `node tests/visitor-ai.test.js` y `node tests/game-logic.test.js`.
+
+## Actualización v2.0 — lectura del lanzamiento y control táctil
+
+- La zona de strike ahora tiene borde, relleno verde y etiqueta visible.
+- Durante el vuelo, una estela corta sigue la trayectoria real: verde para lanzamiento en zona y coral para lanzamiento fuera. El aviso superior también distingue entre prepararse para batear y dejar pasar la bola.
+- En Android, la mira se coloca desplazada respecto al dedo para que la mano no la cubra. Al lanzar desde la defensa, un aviso explica si el destino está dentro o fuera de la zona.
+- La caché PWA cambia a v2.0 para que instalaciones existentes descarguen esta actualización.
+
+Pruebas: `node tests/pwa.test.js`, `node tests/lobby.test.js`, `node tests/save-resume.test.js`, `node tests/visitor-ai.test.js` y `node tests/game-logic.test.js`.
