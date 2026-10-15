@@ -171,3 +171,10 @@ Prueba PWA: `node tests/pwa.test.js`. Pruebas de juego: `node tests/lobby.test.j
 - La caché PWA cambia a v2.0 para que instalaciones existentes descarguen esta actualización.
 
 Pruebas: `node tests/pwa.test.js`, `node tests/lobby.test.js`, `node tests/save-resume.test.js`, `node tests/visitor-ai.test.js` y `node tests/game-logic.test.js`.
+
+
+## Actualización v2.1 — llamada coherente con la trayectoria
+
+La bola o el strike ahora se determina por el punto final de la trayectoria, después del movimiento del lanzamiento. La guía de puntería defensiva también toma en cuenta la caída de la curva, para que el aviso y la llamada no se contradigan. La prueba de defensa comprueba 500 trayectorias generadas y valida que el resultado coincida con su destino visible. La caché PWA cambia a v2.1 para actualizar instalaciones existentes.
+
+Pruebas: `node tests/pwa.test.js`, `node tests/lobby.test.js`, `node tests/save-resume.test.js`, `node tests/visitor-ai.test.js` y `node tests/game-logic.test.js`.

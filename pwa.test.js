@@ -13,11 +13,11 @@ for (const file of ['index.html', 'manifest.webmanifest', 'icon.svg', 'icon-192.
   if (!fs.existsSync(file)) throw new Error(`App-shell asset missing: ${file}`);
 }
 if (!html.includes('rel="manifest"') || !html.includes("navigator.serviceWorker.register('./sw.js')") || !html.includes('id="installButton"')) throw new Error('HTML is missing PWA registration or install UI');
-if (!html.includes('ZONA DE STRIKE') || !html.includes('pitch-in-zone') || !html.includes('pitch-outside') || !html.includes('touch?28:0') || !html.includes('touch?56:0')) throw new Error('Clear strike-zone, pitch-direction and touch-aim cues are missing');
+if (!html.includes('ZONA DE STRIKE') || !html.includes('pitch-in-zone') || !html.includes('pitch-outside') || !html.includes('touch?28:0') || !html.includes('touch?56:0') || !html.includes('normalizePitchTarget(p,wantsBall)') || !html.includes('y+selected.breakY')) throw new Error('Clear strike-zone, pitch-direction and touch-aim cues are missing');
 
 const handlers = {};
 const entries = new Map();
-const cacheName = 'diamond-club-v2.0';
+const cacheName = 'diamond-club-v2.1';
 let skipWaiting = false, clientsClaimed = false, oldCacheDeleted = false;
 const cache = {
   async addAll(paths) { for (const path of paths) entries.set(new URL(path, 'https://app.test/').href, new Response(`cached ${path}`)); },

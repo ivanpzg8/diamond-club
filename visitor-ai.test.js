@@ -2,7 +2,7 @@ const fs = require('fs');
 const vm = require('vm');
 const html = fs.readFileSync('index.html', 'utf8');
 const source = html.match(/<script>([\s\S]*?)<\/script>/)[1]
-  .replace(/showView\('lobbyView'\)\}\)\(\);\s*$/, 'showView(\'lobbyView\');globalThis.__test={s,nextInning,advanceRunners,fieldNow,startFielding,outsideStrikeZone,outsidePitchTarget,inZonePitchTarget,pitchBallChance,aiPitchPool,recordOut};})();');
+  .replace(/showView\('lobbyView'\)\}\)\(\);\s*$/, 'showView(\'lobbyView\');globalThis.__test={s,nextInning,advanceRunners,fieldNow,startFielding,outsideStrikeZone,outsidePitchTarget,inZonePitchTarget,pitchBallChance,aiPitchPool,recordOut,normalizePitchTarget};})();');
 new Function(source);
 const ids = [...html.matchAll(/id="([^"]+)"/g)].map(m => m[1]);
 const elements = {}, handlers = {};
@@ -39,6 +39,7 @@ const strikeTarget = context.__test.inZonePitchTarget();
 if (context.__test.outsideStrikeZone(strikeTarget.x,strikeTarget.y)) throw new Error('Generated strike target must stay inside the visible zone');
 const generatedBall = context.__test.outsidePitchTarget();
 if (!context.__test.outsideStrikeZone(generatedBall.x,generatedBall.y)) throw new Error('Generated ball target must be outside the visible strike zone');
+for(let i=0;i<500;i++){const p={targetX:Math.random()*.76+.12,targetY:Math.random()*.30+.43,breakX:(Math.random()-.5)*.04,breakY:(Math.random()-.5)*.08};const wantsBall=i%2===0;context.__test.normalizePitchTarget(p,wantsBall);if(p.ball!==context.__test.outsideStrikeZone(p.targetX,p.targetY+p.breakY))throw new Error('Pitch call must match the visible curve endpoint');if(p.ball!==wantsBall)throw new Error('Pitch trajectory normalization must preserve the intended call')}
 context.__test.s.balls=3; context.__test.s.strikes=0;
 if (context.__test.pitchBallChance()!==.08 || !context.__test.aiPitchPool().every(p=>p.kind==='fast')) throw new Error('Pitcher should challenge a 3-ball count with more strikes');
 context.__test.s.balls=0; context.__test.s.strikes=2;
