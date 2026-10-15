@@ -2,7 +2,7 @@ const fs = require('fs');
 const vm = require('vm');
 const html = fs.readFileSync('index.html', 'utf8');
 const script = html.match(/<script>([\s\S]*?)<\/script>/)[1]
-  .replace(/showView\('lobbyView'\)\}\)\(\);\s*$/, `showView('lobbyView');globalThis.__test={s,selectBatter,selectStadium,trainActiveBatter,startOrResumeGame,pointerPos};})();`);
+  .replace(/showView\('lobbyView'\)\}\)\(\);\s*$/, `showView('lobbyView');globalThis.__test={s,selectBatter,selectStadium,trainActiveBatter,startOrResumeGame,pointerPos,selectPracticeMode,startPractice,finishPractice};})();`);
 const ids = [...html.matchAll(/id="([^"]+)"/g)].map(m => m[1]);
 const elements = {}, handlers = {};
 for (const id of ids) {
@@ -10,17 +10,17 @@ for (const id of ids) {
   elements[id] = {
     style: {}, classList: { add(x) { classes.add(x); }, remove(x) { classes.delete(x); }, toggle(x, on) { on ? classes.add(x) : classes.delete(x); }, contains(x) { return classes.has(x); } },
     addEventListener(name, fn) { handlers[`${id}:${name}`] = fn; }, querySelectorAll() { return []; }, dataset: {}, onclick: null,
-    getBoundingClientRect() { return { left: 0, top: 0, width: 700, height: 400 }; }, setPointerCapture() {},
+    getBoundingClientRect() { return id==='aimStick'?{left:0,top:0,width:112,height:112}:{left:0,top:0,width:700,height:400}; }, setPointerCapture() {},
     textContent: '', innerHTML: '', disabled: false,
   };
   if (id === 'lobbyView') classes.delete('hidden');
 }
-const stored = { value: null }, windowHandlers = {};
+const stored = { value: null }, windowHandlers = {}, frames = [];
 let registeredWorker = null;
 const context = {
   document: { getElementById: id => elements[id], querySelectorAll: () => [] }, window: { addEventListener(name, fn) { windowHandlers[name] = fn; } }, navigator: { serviceWorker: { register(path) { registeredWorker = path; return Promise.resolve({}); } } },
   localStorage: { getItem() { return stored.value; }, setItem(k, v) { stored.value = v; } },
-  Math, console, performance: { now: () => 1000 }, clearTimeout() {}, setTimeout() { return 1; }, requestAnimationFrame() {},
+  Math, console, performance: { now: () => 1000 }, clearTimeout() {}, setTimeout() { return 1; }, requestAnimationFrame(fn) { frames.push(fn); },
 };
 vm.runInNewContext(script, context);
 const t = context.__test;
@@ -43,6 +43,7 @@ t.s.half=1;t.pointerPos({clientX:500,clientY:300,pointerType:'touch'});
 if (!elements.pitchInfo.innerHTML.includes('probable bola')) throw new Error('Pitching aim guide should explain an outside target');
 t.pointerPos({clientX:350,clientY:300,pointerType:'mouse'});
 if (Math.abs(t.s.mouse.x-.5)>.001 || Math.abs(t.s.mouse.y-.74)>.001) throw new Error('Mouse aim should remain aligned to the cursor');
+const beforeStick=t.s.mouse.x;handlers['aimStick:pointerdown']({pointerId:7,clientX:56,clientY:56,preventDefault(){}});handlers['aimStick:pointermove']({pointerId:7,clientX:96,clientY:56});if(!elements.aimStick.classList.contains('active')||!elements.aimKnob.style.left||Number.parseFloat(elements.aimKnob.style.left)<=50)throw new Error('Joystick should visibly respond to touch direction');frames.shift()(100);frames.shift()(150);if(t.s.mouse.x<=beforeStick)throw new Error('Joystick should move the aim reticle while held');handlers['aimStick:pointerup']({pointerId:7});if(elements.aimStick.classList.contains('active')||elements.aimKnob.style.left!=='50%')throw new Error('Joystick should recenter on release');
 windowHandlers.load();
 if (registeredWorker !== './sw.js') throw new Error('App should register its offline service worker');
 let prevented=false,prompted=false;
@@ -51,5 +52,20 @@ if (!prevented || elements.installButton.hidden) throw new Error('Supported brow
 Promise.resolve(handlers['installButton:click']()).then(()=>{
   if (!prompted || !elements.installButton.hidden || elements.installButton.disabled) throw new Error('Install button should complete and reset after the browser prompt');
   windowHandlers.appinstalled();
-  console.log('Lobby, training, stadium, fresh match and PWA install flow pass');
+  
+t.s.gameActive=false; t.s.practice=false;
+const profileBeforePractice = stored.value;
+t.selectPracticeMode('fielding');
+if (t.s.practiceMode !== 'fielding' || elements.practiceDescriptionTitle.textContent !== 'Práctica de fildeo') throw new Error('Practice exercise selection failed');
+t.startPractice();
+if (!t.s.practice || !t.s.gameActive || t.s.half !== 0 || !elements.practiceExit.hidden === false) throw new Error('Fielding practice did not start cleanly');
+const practiceCoins = t.s.coins, practiceHits = t.s.matchHits;
+t.finishPractice();
+if (t.s.practice || t.s.gameActive || t.s.coins !== practiceCoins || t.s.matchHits !== practiceHits) throw new Error('Practice exit should end the session without changing profile data');
+if (JSON.parse(stored.value).profile.coins !== JSON.parse(profileBeforePractice).profile.coins) throw new Error('Practice must not persist coin changes');
+t.selectPracticeMode('pitching'); t.startPractice();
+if (t.s.half !== 1 || !t.s.practice || elements.matchTitle.textContent !== 'Práctica de lanzamiento') throw new Error('Pitching practice should start in defensive pitching mode');
+t.finishPractice();
+
+  console.log('Lobby, training, stadium, practice isolation, fresh match and PWA install flow pass');
 }).catch(error=>{console.error(error);process.exitCode=1});

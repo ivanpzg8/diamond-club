@@ -184,3 +184,10 @@ Pruebas: `node tests/pwa.test.js`, `node tests/lobby.test.js`, `node tests/save-
 En dispositivos con pantalla táctil aparece un joystick virtual debajo del campo, a la izquierda del botón principal. Mantén y desliza el joystick para mover la mira gradualmente; al soltarlo, la mira se queda en su lugar. El mismo control sirve para batear, apuntar lanzamientos defensivos y fildear. El campo aún acepta toque directo; en PC continúan disponibles el mouse y las flechas del teclado.
 
 Pruebas: `node tests/pwa.test.js`, `node tests/lobby.test.js`, `node tests/save-resume.test.js`, `node tests/visitor-ai.test.js` y `node tests/game-logic.test.js`.
+
+
+## Actualización v2.4 — modo de práctica
+
+Se agregó un modo de práctica con ejercicios separados de bateo, lanzamiento y fildeo. Incluye contadores propios de la sesión y salida directa al club. La práctica no concede monedas ni cambia hits, objetivos o marcador de partido. No se puede iniciar mientras haya un partido en curso.
+
+Pruebas: `node tests/pwa.test.js`, `node tests/lobby.test.js`, `node tests/save-resume.test.js`, `node tests/visitor-ai.test.js` y `node tests/game-logic.test.js`.
